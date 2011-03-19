@@ -1,0 +1,3 @@
+module HyperActiveRecord
+  # Your code goes here...
+end
