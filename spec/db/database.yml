@@ -1,0 +1,9 @@
+sqlite3:
+  adapter: sqlite3
+  database: hyper_active_record_test.db
+mysql:
+  adapter: mysql
+  host: localhost
+  username: root
+  password:
+  database: hyper_active_record_test
