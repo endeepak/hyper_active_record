@@ -1,5 +1,6 @@
 require 'bundler'
 Bundler::GemHelper.install_tasks
+
 require "rspec"
 require "rspec/core/rake_task"
 
@@ -9,3 +10,10 @@ RSpec::Core::RakeTask.new do |t|
 end
 
 task :default => ["spec"]
+
+desc 'Clear out RDoc and generated packages'
+task :clean do
+  rm_rf "hyper_active_record.log"
+  rm_rf "hyper_active_record_test.db"
+  rm_rf "pkg"
+end

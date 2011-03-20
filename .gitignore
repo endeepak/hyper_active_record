@@ -3,3 +3,4 @@ pkg/*
 .bundle
 *.db
 *.log
+.idea
