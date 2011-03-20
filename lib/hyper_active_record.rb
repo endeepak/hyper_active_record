@@ -17,8 +17,8 @@ module HyperActiveRecord
 
     def scoped_by(opts)
       opts.inject(clone) do |relation, scope|
-        name , value = *scope
-        relation = relation.send(name, value)
+        name, value = *scope
+        relation = value.is_a?(Array) ? relation.send(name, *value) : relation.send(name, value)
       end
     end
 
@@ -26,9 +26,7 @@ module HyperActiveRecord
     def slice_scopes(opts)
       scope_options = {}
       opts.each do |name, value|
-        scope = scopes[name]
-        next if scope.nil?
-        next if scope.arity <= 0 and value == false
+        next unless scopes.has_key?(name)
         scope_options[name] = value
       end
       return scope_options, opts.except(*(scope_options.keys))
