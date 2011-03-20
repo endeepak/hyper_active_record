@@ -18,7 +18,12 @@ describe HyperActiveRecord::QueryMethods do
       old_project = Factory(:project, :start_date => 2.years.ago)
       new_project = Factory(:project, :start_date => Date.today)
 
-      Project.all(:conditions => {:started_after => 1.year.ago}).should == [new_project]
+      conditions = {:started_after => 1.year.ago}
+      expected_records = [new_project]
+
+      Project.where(conditions).should == expected_records
+      Project.all(:conditions => conditions).should == expected_records
+      Project.count(:conditions => conditions).should == expected_records.size
     end
   end
 
@@ -28,15 +33,23 @@ describe HyperActiveRecord::QueryMethods do
       new_simple_project = Factory(:project, :start_date => Date.today, :priority => 2)
       new_critical_project = Factory(:project, :start_date => Date.today, :priority => 1)
 
-      Project.all(:conditions => {:started_after => 1.year.ago, :priority => 2}).should == [new_simple_project]
+      conditions = {:started_after => 1.year.ago, :priority => 2}
+      expected_records = [new_simple_project]
+
+      Project.where(conditions).should == expected_records
+      Project.all(:conditions => conditions).should == expected_records
+      Project.count(:conditions => conditions).should == expected_records.size
     end
   end
 
   context "when scope or column does not exist" do
     it "should raise error" do
-      lambda {
-        Project.all(:conditions => {:non_existing_scope => 1.year.ago})
-      }.should raise_error(/no such column: projects.non_existing_scope/)
+      conditions = {:non_existing_scope => 1.year.ago}
+      expected_error = /no such column: projects.non_existing_scope/
+
+      lambda { Project.where(conditions).to_a }.should raise_error(expected_error)
+      lambda { Project.all(:conditions => conditions) }.should raise_error(expected_error)
+      lambda { Project.count(:conditions => conditions) }.should raise_error(expected_error)
     end
   end
 
@@ -47,7 +60,12 @@ describe HyperActiveRecord::QueryMethods do
       project_2 = Factory(:project, :priority => 2)
       project_3 = Factory(:project, :priority => 3)
 
-      Project.all(:conditions => {:priority => 2}).should =~ [project_1, project_2]
+      conditions = {:priority => 2}
+      expected_records = [project_1, project_2]
+
+      Project.where(conditions).should == expected_records
+      Project.all(:conditions => conditions).should == expected_records
+      Project.count(:conditions => conditions).should == expected_records.size
     end
   end
 
@@ -58,7 +76,12 @@ describe HyperActiveRecord::QueryMethods do
         project_2 = Factory(:project, :end_date => nil)
         project_3 = Factory(:project, :end_date => Date.today)
 
-        Project.all(:conditions => {:completed => true}).should =~ [project_1, project_3]
+        conditions = {:completed => true}
+        expected_records = [project_1, project_3]
+
+        Project.where(conditions).should == expected_records
+        Project.all(:conditions => conditions).should == expected_records
+        Project.count(:conditions => conditions).should == expected_records.size
       end
     end
 
@@ -68,9 +91,12 @@ describe HyperActiveRecord::QueryMethods do
         project_2 = Factory(:project, :end_date => nil)
         project_3 = Factory(:project, :end_date => Date.today)
 
-        lambda {
-          Project.all(:conditions => {:completed => false})
-        }.should raise_error(/no such column: projects.completed/)
+        conditions = {:completed => false}
+        expected_error = /no such column: projects.completed/
+
+        lambda { Project.where(conditions).to_a }.should raise_error(expected_error)
+        lambda { Project.all(:conditions => conditions) }.should raise_error(expected_error)
+        lambda { Project.count(:conditions => conditions) }.should raise_error(expected_error)
       end
     end
   end

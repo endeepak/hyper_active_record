@@ -8,17 +8,30 @@ module HyperActiveRecord
     def where(opts, *rest)
       return super unless opts.is_a?(Hash)
       return super if opts.delete(APPLIED_SCOPE_MARKER)
-      relation = clone
-      applied_scopes = []
-      opts.each do |name, value|
-        scope = scopes[name]
-        next if not scope
-        next if scope.arity <= 0 and value == false
-        applied_scopes << name
+
+      scope_options, other_options = slice_scopes(opts)
+      relation = self.scoped_by(scope_options)
+
+      relation.where(other_options.merge(APPLIED_SCOPE_MARKER => true), rest)
+    end
+
+    def scoped_by(opts)
+      opts.inject(clone) do |relation, scope|
+        name , value = *scope
         relation = relation.send(name, value)
       end
-      opts.delete(*applied_scopes) if applied_scopes.present?
-      relation.where(opts.merge(APPLIED_SCOPE_MARKER => true), rest)
+    end
+
+  protected
+    def slice_scopes(opts)
+      scope_options = {}
+      opts.each do |name, value|
+        scope = scopes[name]
+        next if scope.nil?
+        next if scope.arity <= 0 and value == false
+        scope_options[name] = value
+      end
+      return scope_options, opts.except(*(scope_options.keys))
     end
   end
 end
