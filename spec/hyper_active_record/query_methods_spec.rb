@@ -3,9 +3,9 @@ require 'spec_helper'
 describe HyperActiveRecord::QueryMethods do
   before(:each) do
     class Project < ActiveRecord::Base
-      scope :started_after, lambda { |time| where('start_date > ?', time) }
+      scope :started_after, lambda { |date| where('start_date > ?', date) }
       scope :started_during, lambda { |begining, ending| where('start_date BETWEEN ? AND ?', begining, ending) }
-      scope :completed, lambda { |time| where('end_date IS NOT NULL') }
+      scope :completed, lambda { where('end_date IS NOT NULL') }
     end
   end
 
