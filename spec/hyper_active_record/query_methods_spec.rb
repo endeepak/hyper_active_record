@@ -6,12 +6,17 @@ describe HyperActiveRecord::QueryMethods do
       scope :started_after, lambda { |date| where('start_date > ?', date) }
       scope :started_during, lambda { |begining, ending| where('start_date BETWEEN ? AND ?', begining, ending) }
       scope :completed, lambda { where('end_date IS NOT NULL') }
+      belongs_to :company
+    end
+    class Company < ActiveRecord::Base
+      has_many :projects
     end
   end
 
   after(:each) do
     Project.scopes.clear
     Project.delete_all
+    Company.delete_all
   end
 
   context "for scope with no parameters" do
@@ -127,6 +132,21 @@ describe HyperActiveRecord::QueryMethods do
       Project.where(conditions).should == expected_records
       Project.all(:conditions => conditions).should == expected_records
       Project.count(:conditions => conditions).should == expected_records.size
+    end
+  end
+
+  context "on a association relation" do
+    it "applies scope" do
+      company = Company.create!(:name => "aaa")
+      old_project = Factory(:project, :start_date => 2.years.ago, :company => company)
+      new_project = Factory(:project, :start_date => Date.today, :company => company)
+
+      conditions = {:started_after => 1.year.ago}
+      expected_records = [new_project]
+
+      company.projects.where(conditions).should == expected_records
+      company.projects.all(:conditions => conditions).should == expected_records
+      company.projects.count(:conditions => conditions).should == expected_records.size
     end
   end
 end

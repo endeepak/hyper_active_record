@@ -12,7 +12,7 @@ module HyperActiveRecord
       scope_options, other_options = slice_scopes(opts)
       relation = self.scoped_by(scope_options)
 
-      relation.where(other_options.merge(APPLIED_SCOPE_MARKER => true), rest)
+      relation.where(other_options.merge(APPLIED_SCOPE_MARKER => true), *rest)
     end
 
     def scoped_by(opts)
