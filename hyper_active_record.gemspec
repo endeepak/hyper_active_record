@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.email       = ["endeep123@gmail.com"]
   s.homepage    = "https://github.com/endeepak/hyper_active_record"
   s.summary     = %q{hyper active record}
-  s.description = %q{Makes active record awesome}
+  s.description = %q{Makes active record super awesome}
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
