@@ -6,6 +6,7 @@ describe HyperActiveRecord::QueryMethods do
       scope :started_after, lambda { |date| where('start_date > ?', date) }
       scope :started_during, lambda { |begining, ending| where('start_date BETWEEN ? AND ?', begining, ending) }
       scope :completed, lambda { where('end_date IS NOT NULL') }
+      scope "running", lambda { where('end_date IS NULL') }
       belongs_to :company
     end
     class Company < ActiveRecord::Base
@@ -27,6 +28,34 @@ describe HyperActiveRecord::QueryMethods do
 
       conditions = {:completed => 'anything'}
       expected_records = [project_1, project_3]
+
+      Project.where(conditions).should == expected_records
+      Project.all(:conditions => conditions).should == expected_records
+      Project.count(:conditions => conditions).should == expected_records.size
+    end
+  end
+
+  context "when conditions key is a string" do
+    it "applies scope" do
+      project_1 = Factory(:project, :end_date => Date.today)
+      project_2 = Factory(:project, :end_date => nil)
+
+      conditions = {"completed" => true}
+      expected_records = [project_1]
+
+      Project.where(conditions).should == expected_records
+      Project.all(:conditions => conditions).should == expected_records
+      Project.count(:conditions => conditions).should == expected_records.size
+    end
+  end
+
+  context "when scope name is a string" do
+    it "applies scope" do
+      project_1 = Factory(:project, :end_date => Date.today)
+      project_2 = Factory(:project, :end_date => nil)
+
+      conditions = {:running => true}
+      expected_records = [project_2]
 
       Project.where(conditions).should == expected_records
       Project.all(:conditions => conditions).should == expected_records

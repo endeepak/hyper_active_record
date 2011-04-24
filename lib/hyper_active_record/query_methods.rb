@@ -26,7 +26,7 @@ module HyperActiveRecord
     def slice_scopes(opts)
       scope_options = {}
       opts.each do |name, value|
-        next unless scopes.has_key?(name)
+        next unless scopes.has_key?(name.to_sym)
         scope_options[name] = value
       end
       return scope_options, opts.except(*(scope_options.keys))
